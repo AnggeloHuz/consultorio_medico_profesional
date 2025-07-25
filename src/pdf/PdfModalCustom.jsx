@@ -5,7 +5,7 @@ import MyDocument from "./MyDocument";
 import { Context } from "../context/Context";
 import MyDocument2Pages from "./MyDocument2Pages";
 
-export function PdfModalCustom({ openModal, setOpenModal, contentPDF, contentPDF2 }) {
+export function PdfModalCustom({ openModal, setOpenModal, contentPDF, contentPDF2, size }) {
   const { enterprise } = useContext(Context);
 
   const [value, setValue] = useState({
@@ -62,6 +62,7 @@ export function PdfModalCustom({ openModal, setOpenModal, contentPDF, contentPDF
                 datos2={value2.datos}
                 tipo={value.tipo}
                 enterprise={enterprise}
+                size={size}
               />
             </PDFViewer>
           </section>

@@ -529,6 +529,7 @@ export function ModalRecipe({ openModal, setOpenModal, paciente }) {
             contentPDF2={contentIndica}
             openModal={openPdf}
             setOpenModal={setOpenPdf}
+            size={"A5"}
           />
         </Modal.Body>
       </Modal>

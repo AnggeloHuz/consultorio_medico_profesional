@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
   }
 });
 
-function MyDocument({titulo, datos, tipo, enterprise}) {
+function MyDocument({titulo, datos, tipo, enterprise, size}) {
     return (
       <Document>
-        <Page object-fit="fill" style={styles.page} size="A4">
+        <Page object-fit="fill" style={styles.page} size={size ===  null ? "A4" : size}>
           <View style={styles.view}>
             <Image style={styles.image} src={fondo} alt="images" />
             <View style={styles.encabezado}>

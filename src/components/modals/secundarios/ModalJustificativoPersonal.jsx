@@ -110,7 +110,7 @@ export function ModalJustificativoPersonal({ paciente, openModal, setOpenModal }
               </div>
             </form>
           </div>
-          <PdfModal openModal={openPdf} setOpenModal={setOpenPdf} />
+          <PdfModal size={"A5"} openModal={openPdf} setOpenModal={setOpenPdf} />
         </Modal.Body>
       </Modal>
     </>

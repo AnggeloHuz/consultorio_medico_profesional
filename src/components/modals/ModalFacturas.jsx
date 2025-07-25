@@ -18,25 +18,44 @@ export function ModalFacturas({ openModal, setOpenModal }) {
   const [typePaciente, setTypePaciente] = useState(null);
   const [mostrarHistoria, setMostrarHistoria] = useState(false);
   const [historia, setHistoria] = useState("")
-  const [values, setValues] = useState({
-    id_patient: 0,
-    name: "",
-    ci: "",
-    age: 0,
-    fn: "",
-    sex: "",
-    address: "",
-    phone: "",
-    email: "",
-    date: "",
-    bolivares: 0,
-    dolares: 0,
-    estado: "",
-    motivo: "",
-    metodo: "",
-    fecha: "",
-    hora: ""
-  });
+  const [values, setValues] = useState({});
+
+  useEffect(() => {
+    function load(params) {
+      let today = new Date();
+      let day = today.getDate() < 10 ? "0" + today.getDate() : today.getDate();
+      let month =
+        today.getMonth() + 1 < 10
+          ? "0" + (Number(today.getMonth()) + 1)
+          : today.getMonth() + 1;
+      let year = today.getFullYear();
+      let hour =
+        today.getHours() < 10 ? "0" + today.getHours : today.getHours();
+      let minutes =
+        today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes();
+
+      setValues({
+        id_patient: 0,
+        name: "",
+        ci: "",
+        age: 0,
+        fn: "",
+        sex: "",
+        address: "",
+        phone: "",
+        email: "",
+        date: "",
+        bolivares: 0,
+        dolares: 0,
+        estado: "",
+        motivo: "",
+        metodo: "",
+        fecha: year + "-" + month + "-" + day,
+        hora: hour + ":" + minutes,
+      });
+    }
+    load()
+  }, [openModal]);
 
   useEffect(() => {
     function load() {
@@ -57,8 +76,8 @@ export function ModalFacturas({ openModal, setOpenModal }) {
           estado: "",
           motivo: "",
           metodo: "",
-          fecha: "",
-          hora: "",
+          fecha: values.fecha,
+          hora: values.hora,
         });
       } else {
         setValues({
@@ -512,26 +531,46 @@ export function ModalFacturas({ openModal, setOpenModal }) {
                           </label>
                           <div className=" col-span-2 flex items-center gap-4">
                             <div className="h-full flex items-center gap-1">
-                              <input
-                                type="radio"
-                                id="option1"
-                                name="sex"
-                                value={"M"}
-                                onChange={handleInputChange}
-                                disabled={
-                                  typePaciente === "regular"
-                                    ? paciente === null
+                              {typePaciente === "regular" ? (
+                                <input
+                                  type="radio"
+                                  id="option1"
+                                  name="sex"
+                                  value={"M"}
+                                  onChange={handleInputChange}
+                                  disabled={
+                                    typePaciente === "regular"
+                                      ? paciente === null
+                                        ? true
+                                        : false
+                                      : false
+                                  }
+                                  checked={
+                                    paciente === null
+                                      ? false
+                                      : values.sex == "M"
                                       ? true
                                       : false
-                                    : false
-                                }
-                                defaultChecked={
-                                  paciente === null
-                                    ? false
-                                    : paciente.sex_patient == "M"
-                                }
-                                className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
-                              />
+                                  }
+                                  className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
+                                />
+                              ) : (
+                                <input
+                                  type="radio"
+                                  id="option1"
+                                  name="sex"
+                                  value={"M"}
+                                  onChange={handleInputChange}
+                                  disabled={
+                                    typePaciente === "regular"
+                                      ? paciente === null
+                                        ? true
+                                        : false
+                                      : false
+                                  }
+                                  className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
+                                />
+                              )}
                               <label
                                 htmlFor=""
                                 className="font-Montserrat text-xs xl:text-sm"
@@ -541,26 +580,46 @@ export function ModalFacturas({ openModal, setOpenModal }) {
                             </div>
 
                             <div className="h-full flex items-center gap-1">
-                              <input
-                                type="radio"
-                                id="option2"
-                                name="sex"
-                                value={"F"}
-                                onChange={handleInputChange}
-                                disabled={
-                                  typePaciente === "regular"
-                                    ? paciente === null
+                              {typePaciente === "regular" ? (
+                                <input
+                                  type="radio"
+                                  id="option2"
+                                  name="sex"
+                                  value={"F"}
+                                  onChange={handleInputChange}
+                                  disabled={
+                                    typePaciente === "regular"
+                                      ? paciente === null
+                                        ? true
+                                        : false
+                                      : false
+                                  }
+                                  checked={
+                                    paciente === null
+                                      ? false
+                                      : values.sex == "F"
                                       ? true
                                       : false
-                                    : false
-                                }
-                                defaultChecked={
-                                  paciente === null
-                                    ? false
-                                    : paciente.sex_patient == "F"
-                                }
-                                className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
-                              />
+                                  }
+                                  className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
+                                />
+                              ) : (
+                                <input
+                                  type="radio"
+                                  id="option2"
+                                  name="sex"
+                                  value={"F"}
+                                  onChange={handleInputChange}
+                                  disabled={
+                                    typePaciente === "regular"
+                                      ? paciente === null
+                                        ? true
+                                        : false
+                                      : false
+                                  }
+                                  className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
+                                />
+                              )}
                               <label
                                 htmlFor="option2"
                                 className="font-Montserrat text-xs xl:text-sm"
@@ -675,7 +734,8 @@ export function ModalFacturas({ openModal, setOpenModal }) {
                         value={values.fecha}
                         onChange={handleInputChange}
                         type="date"
-                        className="font-Montserrat rounded-md bg-Blanco border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro"
+                        disabled
+                        className="bg-slate-200 font-Montserrat rounded-md border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro"
                       />
                     </div>
                     <div className="flex flex-col w-[25%] gap-1">
@@ -690,7 +750,8 @@ export function ModalFacturas({ openModal, setOpenModal }) {
                         value={values.hora}
                         onChange={handleInputChange}
                         type="time"
-                        className="font-Montserrat rounded-md bg-Blanco border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro"
+                        disabled
+                        className="bg-slate-200 font-Montserrat rounded-md border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro"
                       />
                     </div>
                   </div>

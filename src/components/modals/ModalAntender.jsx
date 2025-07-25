@@ -17,6 +17,7 @@ export function ModalAtender({ openModal, setOpenModal, pacienteAtender, title }
   const [image, setImage] = useState(false);
   const [historia, setHistoria] = useState(pacienteAtender === null ? "" : pacienteAtender.history);
   const [paciente, setPaciente] = useState(null);
+  const [loading, setLoading] = useState(true)
   const [values, setValues] = useState({
     id_patient: 0,
     name: "",
@@ -79,14 +80,16 @@ export function ModalAtender({ openModal, setOpenModal, pacienteAtender, title }
   }, [openModal]);
 
   const loadHistory = async () => {
-    console.log("aqui es loadhistory")
+    setLoading(true)
     const response = await getFetchParams(petitions.getHistory, pacienteAtender.id_patient)
     console.log(response)
     if (response.status >= 400) {
       setHistoria("")
+      setLoading(false)
       return alertError(response.message)
     } else {
       setHistoria(response.data[0].history)
+      setLoading(false)
       return alertSuccess(response.message)
     }
   }
@@ -437,7 +440,11 @@ export function ModalAtender({ openModal, setOpenModal, pacienteAtender, title }
                 Historia Médica:
               </h4>
               <div className="w-full h-full bg-Blanco">
-                <TinyEditor2 value={historia} setValue={setHistoria} />
+                {loading ? (
+                  <></>
+                ) : (
+                  <TinyEditor2 value={historia} setValue={setHistoria} />
+                )}
               </div>
             </div>
 

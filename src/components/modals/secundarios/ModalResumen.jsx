@@ -12,6 +12,7 @@ export function ModalResumen({ openModal, setOpenModal, paciente }) {
 
   const [resumen, setResumen] = useState("");
   const [openPdf, setOpenPdf] = useState(false);
+  const [size, setSize] = useState("A4");
 
   useEffect(() => {
     async function load() {
@@ -48,7 +49,7 @@ export function ModalResumen({ openModal, setOpenModal, paciente }) {
     }
   };
 
-  const crearResumen = (e) => {
+  const crearResumen = () => {
     const comprobar = formValidation.validateText(resumen)
     if (!comprobar) {
       return alertError("No puedes crear el resumen del caso vacio")
@@ -99,12 +100,19 @@ export function ModalResumen({ openModal, setOpenModal, paciente }) {
                 </button>
                 <button
                   type="button"
-                  onClick={crearResumen}
+                  onClick={(e) => {
+                    setSize("A4");
+                    crearResumen()
+                  }}
                   className="text-xs p-1 bg-white w-24 rounded-md border border-black hover:bg-Azul-Oscuro hover:border-Azul-Oscuro hover:text-white transition-all duration-300"
                 >
                   Imprimir G
                 </button>
                 <button
+                  onClick={(e) => {
+                    setSize("A5");
+                    crearResumen()
+                  }}
                   type="button"
                   className="text-xs p-1 bg-white w-24 rounded-md border border-black hover:bg-Azul-Oscuro hover:border-Azul-Oscuro hover:text-white transition-all duration-300"
                 >
@@ -121,7 +129,7 @@ export function ModalResumen({ openModal, setOpenModal, paciente }) {
               </div>
             </form>
           </div>
-          <PdfModal openModal={openPdf} setOpenModal={setOpenPdf} />
+          <PdfModal size={size} openModal={openPdf} setOpenModal={setOpenPdf} />
         </Modal.Body>
       </Modal>
     </>

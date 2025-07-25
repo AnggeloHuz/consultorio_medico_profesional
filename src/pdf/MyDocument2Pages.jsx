@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
   }
 });
 
-function MyDocument2Pages({datos, datos2, enterprise}) {
+function MyDocument2Pages({datos, datos2, enterprise, size}) {
     return (
       <Document>
-        <Page object-fit="fill" style={styles.page} size="A4">
+        <Page object-fit="fill" style={styles.page} size={size ===  null ? "A4" : size}>
           <View style={styles.view}>
             <Image style={styles.image} src={fondo} alt="images" />
             <View style={styles.encabezado}>
@@ -123,7 +123,7 @@ function MyDocument2Pages({datos, datos2, enterprise}) {
           </View>
         </Page>
 
-        <Page object-fit="fill" style={styles.page} size="A4">
+        <Page object-fit="fill" style={styles.page} size={size ===  null ? "A4" : size}>
           <View style={styles.view}>
             <Image style={styles.image} src={fondo} alt="images" />
             <View style={styles.encabezado}>

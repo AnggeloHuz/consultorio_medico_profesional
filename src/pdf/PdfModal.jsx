@@ -4,7 +4,7 @@ import { PDFViewer } from "@react-pdf/renderer";
 import MyDocument from "./MyDocument";
 import { Context } from "../context/Context";
 
-export function PdfModal({ openModal, setOpenModal }) {
+export function PdfModal({ openModal, setOpenModal, size }) {
   const { contentPDF, enterprise } = useContext(Context);
 
   const [value, setValue] = useState({
@@ -42,7 +42,7 @@ export function PdfModal({ openModal, setOpenModal }) {
         <Modal.Body>
           <section className="w-full h-[75vh]">
             <PDFViewer className="w-full h-[75vh]">
-              <MyDocument titulo={value.titulo} datos={value.datos} tipo={value.tipo} enterprise={enterprise} />
+              <MyDocument size={size} titulo={value.titulo} datos={value.datos} tipo={value.tipo} enterprise={enterprise} />
             </PDFViewer>
           </section>
         </Modal.Body>

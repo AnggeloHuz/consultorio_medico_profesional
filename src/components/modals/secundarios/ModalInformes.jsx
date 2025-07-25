@@ -239,7 +239,7 @@ export function ModalInformes({ openModal, setOpenModal, paciente }) {
               </div>
             </form>
           </div>
-          <PdfModal openModal={openPdf} setOpenModal={setOpenPdf} />
+          <PdfModal size={"A5"} openModal={openPdf} setOpenModal={setOpenPdf} />
         </Modal.Body>
       </Modal>
     </>

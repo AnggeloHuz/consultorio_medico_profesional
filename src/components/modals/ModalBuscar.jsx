@@ -304,7 +304,7 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
                             value={"M"}
                             onChange={handleInputChange}
                             disabled={paciente === null ? true : false}
-                            defaultChecked={paciente === null ? false : (paciente.sex_patient == "M")}
+                            checked={paciente === null ? false : (values.sex == "M") ? true : false}
                             className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
                           />
                           <label
@@ -323,7 +323,7 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
                             value={"F"}
                             onChange={handleInputChange}
                             disabled={paciente === null ? true : false}
-                            defaultChecked={paciente === null ? false : (paciente.sex_patient == "F")}
+                            checked={paciente === null ? false : (values.sex == "F") ? true : false}
                             className="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-Azul-claro checked:border-Azul-Oscuro checked:bg-Azul-Oscuro"
                           />
                           <label
