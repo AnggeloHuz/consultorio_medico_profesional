@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { deleteFetch, getFetch, postFetch, postFetchPath } from "../js/fetch";
+import { deleteFetch, getFetch, postFetch, postFetchPath, putFetchParams } from "../js/fetch";
 import { petitions } from "../js/petitions";
 import { alertError, alertSuccess } from "../js/alerts";
 
@@ -203,6 +203,26 @@ export function ContextProvider(props) {
     }
   }
 
+  const editPatient = async(path, id_patient, data) => {
+    const response = await putFetchParams(data, path, id_patient)
+    console.log(data)
+    console.log(response)
+    if (response.status >= 400) {
+      return alertError(response.message)
+    } else if (response.status >= 200) {
+      const newPatients = []
+      for (let i = 0; i < patients.length; i++) {
+        if (patients[i].id_patient === id_patient) {
+          newPatients.push(response.data[0])
+        } else {
+          newPatients.push(patients[i])
+        } 
+      }
+      setPatients(newPatients)
+      return alertSuccess(response.message)
+    }
+  }
+
   return (
     <Context.Provider
       value={{
@@ -237,7 +257,8 @@ export function ContextProvider(props) {
         addMedicamento,
         deleteMedicamento,
         addIndicacion,
-        deleteIndicacion
+        deleteIndicacion,
+        editPatient
       }}
     >
       {props.children}

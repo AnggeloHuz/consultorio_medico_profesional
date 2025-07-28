@@ -5,7 +5,7 @@ import Autocomplete from "../form/Autocomplete";
 import { Context } from "../../context/Context";
 import { getFetchParams, postFetch, postFetchParams } from "../../js/fetch";
 import { petitions } from "../../js/petitions";
-import { alertError, alertSuccess } from "../../js/alerts";
+import { alertConfirm, alertError, alertSuccess } from "../../js/alerts";
 import OpcionesHistorias from "./OpcionesHistorias";
 import TinyEditor2 from "../editor/TinyEditor2";
 import TinyEditor from "../editor/TinyEditor";
@@ -80,11 +80,22 @@ export function ModalFacturas({ openModal, setOpenModal }) {
           hora: values.hora,
         });
       } else {
+        let fn = paciente.fn_patient.split("-");
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        const mes = hoy.getMonth() + 1;
+        const dia = hoy.getDate();
         setValues({
           id_patient: paciente.id_patient,
           name: paciente.name_patient,
           ci: paciente.ci_patient,
-          age: paciente.age_patient,
+          age:             mes > fn[1]
+              ? Number(año) - Number(fn[0])
+              : mes === fn[1]
+              ? dia >= fn[2]
+                ? Number(año) - Number(fn[0])
+                : Number(año) - Number(fn[0]) - 1
+              : Number(año) - Number(fn[0]) - 1,
           fn: paciente.fn_patient,
           sex: paciente.sex_patient,
           address: paciente.address_patient,
@@ -96,8 +107,8 @@ export function ModalFacturas({ openModal, setOpenModal }) {
           estado: "",
           motivo: "",
           metodo: "",
-          fecha: "",
-          hour: ""
+          fecha: values.fecha,
+          hora: values.hora
         })
       }
     }
@@ -207,6 +218,9 @@ export function ModalFacturas({ openModal, setOpenModal }) {
       }
     } else {
       // Si el paciente es regular
+      if (paciente === null) {
+        return alertError("No has seleccionado ningún paciente")
+      }
       const response2 = await postFetchParams(
         values,
         petitions.addConsulta,
@@ -223,38 +237,42 @@ export function ModalFacturas({ openModal, setOpenModal }) {
     }
   };
 
+    const onClose = async (e) => {
+      e.preventDefault();
+      let response = await alertConfirm(
+        "Vas a cerrar la ventana de consulta, eso quiere decir que ya creaste la consulta del paciente",
+        "Debes estar más atento para no perder los datos de la consulta antes de crearle completamente"
+      );
+      if (response) {
+        setOpenModal(false);
+        setValues({
+          id_patient: 0,
+          name: "",
+          ci: "",
+          age: 0,
+          fn: "",
+          sex: "",
+          address: "",
+          phone: "",
+          email: "",
+          date: "",
+          bolivares: 0,
+          dolares: 0,
+          estado: "",
+          motivo: "",
+          metodo: "",
+          fecha: "",
+          hour: "",
+        });
+        setPaciente(null);
+        setHistoria("");
+        setMostrarHistoria(false);
+      }
+    };
+
   return (
     <>
-      <Modal
-        dismissible
-        size={"[80%]"}
-        show={openModal}
-        onClose={() => {
-          setOpenModal(false);
-          setValues({
-            id_patient: 0,
-            name: "",
-            ci: "",
-            age: 0,
-            fn: "",
-            sex: "",
-            address: "",
-            phone: "",
-            email: "",
-            date: "",
-            bolivares: 0,
-            dolares: 0,
-            estado: "",
-            motivo: "",
-            metodo: "",
-            fecha: "",
-            hour: "",
-          });
-          setPaciente(null);
-          setHistoria("");
-          setMostrarHistoria(false);
-        }}
-      >
+      <Modal dismissible size={"[80%]"} show={openModal} onClose={onClose}>
         <Modal.Header>
           {" "}
           <div>
@@ -449,14 +467,24 @@ export function ModalFacturas({ openModal, setOpenModal }) {
                                   : false
                                 : false
                             }
+                            value={values.fn}
                             onChange={(e) => {
                               const { name, value } = e.target;
                               let fn = value.split("-");
                               const hoy = new Date();
                               const año = hoy.getFullYear();
+                              const mes = hoy.getMonth() + 1;
+                              const dia = hoy.getDate();
                               setValues({
                                 ...values,
-                                ["age"]: Number(año) - Number(fn[0]),
+                                ["age"]:
+                                  mes > fn[1]
+                                    ? Number(año) - Number(fn[0])
+                                    : mes === fn[1]
+                                    ? dia >= fn[2]
+                                      ? Number(año) - Number(fn[0])
+                                      : Number(año) - Number(fn[0]) - 1
+                                    : Number(año) - Number(fn[0]) - 1,
                                 [name]: value,
                               });
                             }}
@@ -481,19 +509,9 @@ export function ModalFacturas({ openModal, setOpenModal }) {
                             type="number"
                             min={0}
                             value={values.age}
-                            disabled={
-                              typePaciente === "regular"
-                                ? paciente === null
-                                  ? true
-                                  : false
-                                : false
-                            }
+                            disabled={true}
                             onChange={handleInputChange}
-                            className={`${
-                              paciente === null && typePaciente === "regular"
-                                ? "bg-slate-200"
-                                : "bg-Blanco"
-                            } font-Montserrat w-full rounded-md bg-Blanco border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro`}
+                            className={`font-Montserrat w-full rounded-md bg-slate-200 border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro`}
                           />
                         </div>
 
@@ -888,11 +906,17 @@ export function ModalFacturas({ openModal, setOpenModal }) {
               <button
                 className="px-3 py-2 border-2 w-[100px] justify-center border-Azul-claro bg-Gris-claro rounded-md text-xs xl:text-sm flex items-center gap-2 hover:border-red-700 hover:text-Blanco hover:bg-red-700 transition-all duration-500"
                 color="gray"
-                onClick={() => {
-                  setPaciente(null);
-                  setTypePaciente(null);
-                  setHistoria("");
-                  setMostrarHistoria(false);
+                onClick={async () => {
+                  let response = await alertConfirm(
+                    "Deseas cancelar la consulta que estas realizando, con esto regresar a la ventana anterior",
+                    "Debes estar más atento para no perder los datos de la consulta antes de crearla"
+                  );
+                  if (response) {
+                    setPaciente(null);
+                    setTypePaciente(null);
+                    setHistoria("");
+                    setMostrarHistoria(false);
+                  }
                 }}
               >
                 Cancelar
@@ -902,12 +926,18 @@ export function ModalFacturas({ openModal, setOpenModal }) {
           <button
             className="px-3 py-2 border-2 w-[100px] justify-center border-Azul-claro bg-Gris-claro rounded-md text-xs xl:text-sm flex items-center gap-2 hover:border-red-700 hover:text-Blanco hover:bg-red-700 transition-all duration-500"
             color="gray"
-            onClick={() => {
-              setPaciente(null);
-              setTypePaciente(null);
-              setHistoria("");
-              setMostrarHistoria(false);
-              setOpenModal(false);
+            onClick={async () => {
+              let response = await alertConfirm(
+                "Vas a cerrar la ventana de consulta, eso quiere decir que ya creaste la consulta del paciente",
+                "Debes estar más atento para no perder los datos de la consulta antes de crearle completamente"
+              );
+              if (response) {
+                setPaciente(null);
+                setTypePaciente(null);
+                setHistoria("");
+                setMostrarHistoria(false);
+                setOpenModal(false);
+              }
             }}
           >
             Cerrar

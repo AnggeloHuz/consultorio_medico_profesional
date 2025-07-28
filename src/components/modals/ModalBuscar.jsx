@@ -6,12 +6,12 @@ import { Context } from "../../context/Context";
 import OpcionesHistorias from "./OpcionesHistorias";
 import Diskette from "../../../public/diskette.png";
 import { getFetch, getFetchParams, postFetch } from "../../js/fetch";
-import { alertError, alertSuccess } from "../../js/alerts";
+import { alertConfirm, alertError, alertSuccess } from "../../js/alerts";
 import { petitions } from "../../js/petitions";
 import Autocomplete from "../form/Autocomplete";
 
 export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
-  const { patients } = useContext(Context);
+  const { patients, editPatient } = useContext(Context);
 
   const [image, setImage] = useState(false);
   const [historia, setHistoria] = useState("");
@@ -45,18 +45,30 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
           date: "",
         });
       } else {
+        let fn = paciente.fn_patient.split("-");
+        const hoy = new Date();
+        const año = hoy.getFullYear();
+        const mes = hoy.getMonth() + 1;
+        const dia = hoy.getDate();
         setValues({
           id_patient: paciente.id_patient,
           name: paciente.name_patient,
           ci: paciente.ci_patient,
-          age: paciente.age_patient,
+          age:
+            mes > fn[1]
+              ? Number(año) - Number(fn[0])
+              : mes === fn[1]
+              ? dia >= fn[2]
+                ? Number(año) - Number(fn[0])
+                : Number(año) - Number(fn[0]) - 1
+              : Number(año) - Number(fn[0]) - 1,
           fn: paciente.fn_patient,
           sex: paciente.sex_patient,
           address: paciente.address_patient,
           phone: paciente.phone_patient,
           email: paciente.email_patient,
           date: paciente.date_patient,
-        })
+        });
         loadHistory()
       }
     }
@@ -90,6 +102,37 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let response = await alertConfirm(
+      "Vas a actualizar los datos del paciente con los que se muestra en el formulario",
+      "Debes estar más atento para no perder los datos que tenia anteriormente el paciente al actualizar"
+    );
+    if (response) {
+      editPatient(petitions.updatePatient, values.id_patient, values);
+    }
+  };
+
+  const onClose = async (e) => {
+    e.preventDefault()
+    let response = await alertConfirm(
+      "Vas a cerrar el buscador de historias, eso quiere decir que ya terminaste de hacer los cambios a la historia buscada o cualquier acción",
+      "Debes estar más atento para no perder los cambios realizados si no los has guardado"
+    );
+    if (response) {
+      setOpenModal(false);
+      setValues({
+        id_patient: 0,
+        name: "",
+        ci: "",
+        age: 0,
+        fn: "",
+        sex: "",
+        address: "",
+        phone: "",
+        email: "",
+        date: "",
+      });
+      setPaciente(null);
+    }
   };
 
   return (
@@ -98,22 +141,7 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
         dismissible
         size={"[80%]"}
         show={openModal}
-        onClose={() => {
-          setOpenModal(false);
-          setValues({
-            id_patient: 0,
-            name: "",
-            ci: "",
-            age: 0,
-            fn: "",
-            sex: "",
-            address: "",
-            phone: "",
-            email: "",
-            date: "",
-          });
-          setPaciente(null);
-        }}
+        onClose={onClose}
       >
         <Modal.Header>
           <div>
@@ -238,9 +266,18 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
                           let fn = value.split("-");
                           const hoy = new Date();
                           const año = hoy.getFullYear();
+                          const mes = hoy.getMonth() + 1;
+                          const dia = hoy.getDate()
                           setValues({
                             ...values,
-                            ["age"]: Number(año) - Number(fn[0]),
+                            ["age"]:
+                              mes > fn[1]
+                                ? Number(año) - Number(fn[0])
+                                : mes === fn[1]
+                                ? dia >= fn[2]
+                                  ? Number(año) - Number(fn[0])
+                                  : Number(año) - Number(fn[0]) - 1
+                                : Number(año) - Number(fn[0]) - 1,
                             [name]: value,
                           });
                         }}
@@ -263,11 +300,9 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
                         type="number"
                         min={0}
                         value={values.age}
-                        disabled={paciente === null ? true : false}
+                        disabled={true}
                         onChange={handleInputChange}
-                        className={`${
-                          paciente === null ? "bg-slate-200" : "bg-Blanco"
-                        } font-Montserrat w-full rounded-md bg-Blanco border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro`}
+                        className={`bg-slate-200 font-Montserrat w-full rounded-md border border-Azul-claro px-2 py-2 xl:py-1 text-xs xl:text-sm text-gray-900  outline-Azul-claro`}
                       />
                     </div>
 
@@ -373,27 +408,13 @@ export function ModalBuscar({ openModal, setOpenModal, icon, title }) {
                     type="submit"
                     className="px-2 py-1 border-2 w-24 xl:w-28 justify-center bg-Blanco border-Azul-claro rounded-md text-xs xl:text-sm flex items-center gap-1 hover:border-Azul-Oscuro hover:text-Blanco hover:bg-Azul-Oscuro transition-all duration-500"
                   >
-                    <a className="w-5/6">Editar</a>{" "}
+                    <a className="w-5/6">Actualizar</a>{" "}
                     <img src={Diskette} className="w-1/6" />
                   </button>
                 )}
                 <button
-                  onClick={(e) => {
-                    setOpenModal(false);
-                    setPaciente(null);
-                    setValues({
-                      id_patient: 0,
-                      name: "",
-                      ci: "",
-                      age: 0,
-                      fn: "",
-                      sex: "",
-                      address: "",
-                      phone: "",
-                      email: "",
-                      date: "",
-                    });
-                  }}
+                  type="button"
+                  onClick={onClose}
                   className="px-2 py-1 border-2 w-24 xl:w-28 justify-center bg-Blanco border-Azul-claro rounded-md text-xs xl:text-sm flex items-center gap-1 hover:border-Azul-Oscuro hover:text-Blanco hover:bg-Azul-Oscuro transition-all duration-500"
                 >
                   <a className="w-5/6">Cerrar</a>{" "}

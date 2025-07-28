@@ -33,4 +33,5 @@ export const petitions = {
   guardadosResumen: fetchRoute + "/guardados/resumen/",
   guardadosCita: fetchRoute + "/guardados/cita/",
   guardadosReposo: fetchRoute + "/guardados/reposo/",
+  updatePatient: fetchRoute + "/patients/"
 };

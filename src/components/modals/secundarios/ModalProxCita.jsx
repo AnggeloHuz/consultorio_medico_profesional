@@ -2,7 +2,7 @@ import { Modal } from "flowbite-react";
 import { useContext, useEffect, useState } from "react";
 import { getFetchParams, postFetchParams } from "../../../js/fetch";
 import { petitions } from "../../../js/petitions";
-import { alertError, alertInfo, alertSuccess } from "../../../js/alerts";
+import { alertConfirm, alertError, alertInfo, alertSuccess } from "../../../js/alerts";
 import formValidation from "../../../js/validations";
 import { Context } from "../../../context/Context";
 import { PdfModal } from "../../../pdf/PdfModal";
@@ -81,16 +81,24 @@ export function ModalProxCita({ openModal, setOpenModal, paciente }) {
     setOpenPdf(true);
   };
 
+  const onClose = async (e) => {
+    let response = await alertConfirm(
+      "Deseas cerrar la ventana de próxima cita",
+      "Debes tener más precaución para cerrar esta ventana si no has guardado los cambios"
+    );
+    if (response) {
+      setOpenModal(false);
+      setDate("")
+    }
+  };
+
   return (
     <>
       <Modal
         dismissible
         size="xl"
         show={openModal}
-        onClose={() => {
-          setOpenModal(false);
-          setDate("");
-        }}
+        onClose={onClose}
       >
         <Modal.Header>
           <h4 className="font-Montserrat font-semibold text-lg h-full leading-2 flex gap-2 items-center">
@@ -146,10 +154,8 @@ export function ModalProxCita({ openModal, setOpenModal, paciente }) {
                   Imprimir
                 </button>
                 <button
-                  onClick={(e) => {
-                    setOpenModal(false);
-                    setDate("");
-                  }}
+                  type="button"
+                  onClick={onClose}
                   className="text-xs p-1 bg-white w-24 rounded-md border border-black hover:bg-red-700 hover:border-red-700 hover:text-white transition-all duration-300"
                 >
                   Cerrar

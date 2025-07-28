@@ -37,8 +37,7 @@ export function alertConfirm(message, messageCancel, messageConfirm) {
       title: "¿Estás seguro?",
       text: message,
       showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Guardar",
+      confirmButtonText: "Confirmar",
       denyButtonText: `Cancelar`,
       confirmButtonColor: "#2c5282"
     }).then((result) => {
@@ -46,7 +45,12 @@ export function alertConfirm(message, messageCancel, messageConfirm) {
       if (result.isConfirmed) {
         return resolve(true);
       } else if (result.isDenied) {
-        Swal.fire("Ten cuidado!", messageCancel, "info");
+        Swal.fire({
+          title: "¡Ten cuidado!",
+          text: messageCancel,
+          icon: "info",
+          confirmButtonColor: "#2c5282",
+        });
         return resolve(false);
       }
     });

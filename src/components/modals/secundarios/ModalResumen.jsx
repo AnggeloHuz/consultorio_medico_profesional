@@ -2,7 +2,7 @@ import { Modal } from "flowbite-react";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../../../context/Context";
 import formValidation from "../../../js/validations";
-import { alertError, alertInfo, alertSuccess } from "../../../js/alerts";
+import { alertConfirm, alertError, alertInfo, alertSuccess } from "../../../js/alerts";
 import { PdfModal } from "../../../pdf/PdfModal";
 import { getFetchParams, postFetchParams } from "../../../js/fetch";
 import { petitions } from "../../../js/petitions";
@@ -65,13 +65,23 @@ export function ModalResumen({ openModal, setOpenModal, paciente }) {
     setOpenPdf(true);
   }
 
+  const onClose = async (e) => {
+    let response = await alertConfirm(
+      "Deseas cerrar la ventana de resumen del caso",
+      "Debes tener más precaución para cerrar esta ventana si no has guardado los cambios"
+    );
+    if (response) {
+      setOpenModal(false);
+    }
+  };
+
   return (
     <>
       <Modal
         dismissible
         size="xl"
         show={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={onClose}
       >
         <Modal.Header>
           <h4 className="font-Montserrat font-semibold text-lg h-full leading-2 flex gap-2 items-center">
@@ -119,9 +129,8 @@ export function ModalResumen({ openModal, setOpenModal, paciente }) {
                   Imprimir P
                 </button>
                 <button
-                  onClick={(e) => {
-                    setOpenModal(false);
-                  }}
+                  type="button"
+                  onClick={onClose}
                   className="text-xs p-1 bg-white w-24 rounded-md border border-black hover:bg-red-700 hover:border-red-700 hover:text-white transition-all duration-300"
                 >
                   Cerrar

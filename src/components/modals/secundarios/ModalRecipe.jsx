@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { ModalExSangre } from "./ModalExSangre";
 import { Context } from "../../../context/Context";
 import formValidation from "../../../js/validations";
-import { alertError, alertInfo, alertSuccess } from "../../../js/alerts";
+import { alertConfirm, alertError, alertInfo, alertSuccess } from "../../../js/alerts";
 import { PdfModalCustom } from "../../../pdf/PdfModalCustom";
 import { petitions } from "../../../js/petitions";
 import { getFetchParams, postFetchParams } from "../../../js/fetch";
@@ -202,15 +202,19 @@ export function ModalRecipe({ openModal, setOpenModal, paciente }) {
 
     let recipeM = [];
     let recipeI = [];
-    recipeM.push(`El paciente ${paciente.name_patient}, portador de la C.I: ${paciente.ci_patient}. Amerita los siguientes medicamentos:`);
-    recipeM.push(recipeMedica)
-    recipeI.push(`El paciente ${paciente.name_patient}, portador de la C.I: ${paciente.ci_patient}. Amerita las siguientes indicaciones para el tratamiento con los medicamentos:`);
-    recipeI.push(recipeIndica)
+    recipeM.push(
+      `El paciente ${paciente.name_patient}, portador de la C.I: ${paciente.ci_patient}. Amerita los siguientes medicamentos:`
+    );
+    recipeM.push(recipeMedica);
+    recipeI.push(
+      `El paciente ${paciente.name_patient}, portador de la C.I: ${paciente.ci_patient}. Amerita las siguientes indicaciones para el tratamiento con los medicamentos:`
+    );
+    recipeI.push(recipeIndica);
     setContentMedica({
       tipo: "texto",
       datos: recipeM,
       titulo: "",
-    })
+    });
     setContentIndica({
       tipo: "texto",
       datos: recipeI,
@@ -219,13 +223,23 @@ export function ModalRecipe({ openModal, setOpenModal, paciente }) {
     setOpenPdf(true);
   };
 
+  const onClose = async (e) => {
+    let response = await alertConfirm(
+      "Deseas cerrar la ventana de recipe",
+      "Debes tener más precaución para cerrar esta ventana si no has guardado los cambios"
+    );
+    if (response) {
+      setOpenModal(false);
+    }
+  };
+
   return (
     <>
       <Modal
         dismissible
         size="full"
         show={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={onClose}
       >
         <Modal.Header>
           <h4 className="font-Montserrat font-semibold text-lg leading-2 flex gap-2 items-center">
@@ -320,7 +334,7 @@ export function ModalRecipe({ openModal, setOpenModal, paciente }) {
                   <div className="w-1/6 px-1">
                     <button
                       type="button"
-                      onClick={(e) => setOpenModal(false)}
+                      onClick={onClose}
                       className={style.button}
                     >
                       Cerrar

@@ -17,14 +17,13 @@ import { ModalProxCita } from "./secundarios/ModalProxCita";
 import { ModalInformes } from "./secundarios/ModalInformes";
 import { ModalResumen } from "./secundarios/ModalResumen";
 import { ModalReposo } from "./secundarios/ModalReposo";
-import { alertConfirm, alertSuccess } from "../../js/alerts";
+import { alertConfirm, alertError, alertSuccess } from "../../js/alerts";
 import Swal from "sweetalert2";
 import { getFetchParams, putFetchParams } from "../../js/fetch";
 import { petitions } from "../../js/petitions";
-import { alertError } from "../../../../RaceManager-Proyecto/RaceManager/Client/src/alerts/alerts";
 import { Context } from "../../context/Context";
 
-function OpcionesHistorias({paciente, historia, setOpenModal, setPaciente, loadHistory, atender}) {
+function OpcionesHistorias({paciente, historia, setOpenModal, setPaciente, loadHistory, atender, onClose}) {
   const { loadListPatient } = useContext(Context);
 
   const [recipe, setRecipe] = useState(false);
@@ -50,9 +49,9 @@ function OpcionesHistorias({paciente, historia, setOpenModal, setPaciente, loadH
       title: "¿Estás seguro?",
       text: "Quieres actualizar la historia médica del paciente",
       showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Guardar",
+      confirmButtonText: "Confirmar",
       denyButtonText: `Cancelar`,
+      confirmButtonColor: "#2c5282"
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
@@ -63,7 +62,12 @@ function OpcionesHistorias({paciente, historia, setOpenModal, setPaciente, loadH
           alertSuccess(response.message)
         }
       } else if (result.isDenied) {
-        Swal.fire("¡Ten cuidado!", "No se actualizó la historia", "info");
+        Swal.fire({
+          title: "¡Ten cuidado!",
+          text: "No se actualizó la historia",
+          icon: "info",
+          confirmButtonColor: "#2c5282",
+        });
       }
     });
   };
@@ -266,10 +270,16 @@ function OpcionesHistorias({paciente, historia, setOpenModal, setPaciente, loadH
             </div>
             {atender === undefined ? (
               <button
-                onClick={() => {
-                  setOpenModal(false);
-                  setPaciente(null);
-                  loadHistory();
+                onClick={async () => {
+                  let response = await alertConfirm(
+                    "Vas a cerrar la ventana donde estas modificado la historia del paciente, asegurate que guardaste todos los cambios",
+                    "Debes estar más atento para no perder los cambios realizados a la historia del paciente si no los has guardado"
+                  );
+                  if (response) {
+                    setOpenModal(false);
+                    setPaciente(null);
+                    loadHistory();
+                  }
                 }}
                 className="px-3 py-2 border-2 w-32 xl:w-36 justify-center bg-Blanco border-Azul-claro rounded-md text-xs xl:text-sm flex items-center gap-2 hover:border-red-700 hover:text-Blanco hover:bg-red-700 transition-all duration-500"
               >
@@ -291,9 +301,9 @@ function OpcionesHistorias({paciente, historia, setOpenModal, setPaciente, loadH
                       return alertError(response2.message);
                     }
                     if (response2.status >= 200) {
-                      loadListPatient()
+                      loadListPatient();
                       setOpenModal(false);
-                      console.log("aqui es opciones")
+                      console.log("aqui es opciones");
                       return alertSuccess(response2.message);
                     }
                   }
